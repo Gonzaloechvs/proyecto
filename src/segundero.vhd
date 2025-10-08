@@ -27,18 +27,17 @@ begin
     end process;
 
     U1 : entity prescaler port map (clk => clk, nreset => nreset, preload => preload, tc => hab);
-
     preload <= std_logic_vector(to_unsigned(divisor-1,24));
-
         limite <= segundo ?= 9;
         reset_cuenta <= not nreset or (limite and hab);
-        segungosig <= "0000" when reset_cuenta else
+        segundosig <= "0000" when reset_cuenta else
                 segundo + 1 when hab else
                 segundo;
 
 U2: entity decod_7s port map(
-a=> segundo;
+A=> std_logic_vector(segundo),
 y=> display(6 downto 0)
 );
 display(7) <= limite;
+
 end arch;

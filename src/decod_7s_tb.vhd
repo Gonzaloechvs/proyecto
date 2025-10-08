@@ -3,14 +3,14 @@ use ieee.std_logic_1164.all;
 use std.env.finish;
 use work.all;
 
-entity contador3bit_tb is
-end contador3bit_tb;
+entity decod_7s_tb is
+end decod_7s_tb;
 
-architecture tb of contador3bit_tb is
+architecture tb of decod_7s_tb is
     signal A : std_logic_vector (3 downto 0);
-    signal y : std_logic_vector (2 downto 0);
+    signal y : std_logic_vector (7 downto 0);
 begin
-    DUT : entity contador3bit port map (A => A, y => y);
+    DUT : entity decod_7s port map (A => A, y => y);
     stim : process is
     begin
         A <= "0000";
