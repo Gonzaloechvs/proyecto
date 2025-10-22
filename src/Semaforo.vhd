@@ -36,6 +36,13 @@ entity semaforo is
 end semaforo;
 
 architecture arch of semaforo is
+    constant EST_VERDE_A     : std_logic_vector(2 downto 0) := "000";
+    constant EST_VERDE_A_AD  : std_logic_vector(2 downto 0) := "100";
+    constant EST_AMARILLO_A  : std_logic_vector(2 downto 0) := "001";
+    constant EST_VERDE_B     : std_logic_vector(2 downto 0) := "010";
+    constant EST_VERDE_B_AD  : std_logic_vector(2 downto 0) := "110";
+    constant EST_AMARILLO_B  : std_logic_vector(2 downto 0) := "011";
+
     signal recarga : std_logic_vector(N_TIMER-1 downto 0);
     signal listo : std_logic;
     signal rst_timer : std_logic := '0';
@@ -45,7 +52,6 @@ architecture arch of semaforo is
     signal amarillo : std_logic_vector(1 downto 0):= "11";
     signal rojo : std_logic_vector(1 downto 0):= "10";
     signal est_act, est_sig: std_logic_vector(2 downto 0);
-
 begin
     
   --registro/memoria de estado
@@ -53,9 +59,31 @@ memoria_estado : process(clk)
 begin
     if rising_edge(clk) then
         if nreset = '0' then
-            est_act <= "000"; -- estado inicial
+            est_act <= EST_VERDE_A; -- estado inicial
         else
             est_act <= est_sig;
+        end if;
+    end if;
+end process;
+
+--memoria de pedido peatonal
+pedido_peatonal : process(all)
+begin
+    if rising_edge(clk) then
+        if nreset = '0' then
+            peaton_a <= '0';
+            peaton_b <= '0';
+        else
+            if solicitud_peaton_a and not confirmacion_peaton_a then
+                peaton_a <= '1';
+                elsif confirmacion_peaton_a then
+                    peaton_a <= '0';
+            end if;
+            if solicitud_peaton_b and not confirmacion_peaton_b then
+                peaton_b <= '1';
+                elsif confirmacion_peaton_b then
+                    peaton_b <= '0';
+            end if;
         end if;
     end if;
 end process;
@@ -83,58 +111,83 @@ maquina_estados : process(all)
     begin
         est_sig <= est_act;
         case est_act is
-            when "000" => -- verde A
+            when EST_VERDE_A => -- verde A
                 if listo and hab_timer then
-                    est_sig <= "001"; -- pasar a amarillo A
+                    if peaton_a then
+                        est_sig <= EST_VERDE_A_AD; -- pasar a verde A adicional
+                    else
+                        est_sig <= EST_AMARILLO_A; -- pasar a amarillo A
+                    end if;
                 end if;
-            when "001" => -- amarillo A
+            when EST_VERDE_A_AD => -- verde A adicional para peatonal
                 if listo and hab_timer then
-                    est_sig <= "010"; -- pasar a verde B
+                    est_sig <= EST_AMARILLO_A; -- pasar a amarillo A
                 end if;
-            when "010" => -- verde B
+            when EST_AMARILLO_A => -- amarillo A
                 if listo and hab_timer then
-                    est_sig <= "011"; -- pasar a amarillo B
+                    est_sig <= EST_VERDE_B; -- pasar a verde B
                 end if;
-            when "011" => -- amarillo B
+            when EST_VERDE_B => -- verde B
                 if listo and hab_timer then
-                    est_sig <= "000"; -- pasar a verde A
+                    if peaton_b then
+                        est_sig <= EST_VERDE_B_AD; -- pasar a verde B adicional
+                    else
+                        est_sig <= EST_AMARILLO_B; -- pasar a amarillo B
+                    end if;
+                end if;
+            when EST_VERDE_B_AD => -- verde B adicional con peatonal
+                if listo and hab_timer then
+                    est_sig <= EST_AMARILLO_B; -- pasar a amarillo B
+                end if;
+            when EST_AMARILLO_B => -- amarillo B
+                if listo and hab_timer then
+                    est_sig <= EST_VERDE_A; -- pasar a verde A
                 end if;
             when others =>
-                est_sig <= "000"; -- estado inicial
+                est_sig <= EST_VERDE_A; -- estado inicial
         end case;
     end process;
 
 --Salidas
 salida : process(all)
     begin
-    peaton_a <= '0';
-    peaton_b <= '0';
+    confirmacion_peaton_a  <= '0';
+    confirmacion_peaton_b  <= '0';
         case est_act is
-            when "000" => -- verde A
+            when EST_VERDE_A => -- verde A
                 transito_a <= verde;
                 transito_b <= rojo;
-                recarga <= std_logic_vector(to_unsigned(T_AMARILLO-1, N_TIMER));
-            when "001" => -- amarillo A
+                recarga <= std_logic_vector(to_unsigned(T_VERDE-1, N_TIMER));
+            when EST_AMARILLO_A => -- amarillo A
                 transito_a <= amarillo;
                 transito_b <= rojo;
-                recarga <= std_logic_vector(to_unsigned(T_VERDE-1, N_TIMER));
-            when "010" => -- verde B
+                recarga <= std_logic_vector(to_unsigned(T_AMARILLO-1, N_TIMER));
+            when EST_VERDE_B => -- verde B
                 transito_a <= rojo;
                 transito_b <= verde;
-                recarga <= std_logic_vector(to_unsigned(T_AMARILLO-1, N_TIMER));
-            when "011" => -- amarillo B
+                recarga <= std_logic_vector(to_unsigned(T_VERDE-1, N_TIMER));
+            when EST_AMARILLO_B => -- amarillo B
                 transito_a <= rojo;    
                 transito_b <= amarillo;
-                recarga <= std_logic_vector(to_unsigned(T_VERDE-1, N_TIMER));
+                recarga <= std_logic_vector(to_unsigned(T_AMARILLO-1, N_TIMER));
+            when EST_VERDE_A_AD => -- verde A con peatonal
+                transito_a <= verde;
+                transito_b <= rojo;
+                confirmacion_peaton_a  <= '1';
+                recarga <= std_logic_vector(to_unsigned(T_PEATON-1, N_TIMER));
+            when EST_VERDE_B_AD => -- verde B con peatonal
+                transito_a <= rojo;
+                transito_b <= verde;
+                confirmacion_peaton_b  <= '1';
+                recarga <= std_logic_vector(to_unsigned(T_PEATON-1, N_TIMER));
             when others =>
                 transito_a <= verde; 
                 transito_b <= rojo;
                 recarga <= std_logic_vector(to_unsigned(T_AMARILLO-1, N_TIMER));
         end case;
     end process;
-    -- confirmaciones siempre en 0 (no implementado)
-    confirmacion_peaton_a  <= '0';
-    confirmacion_peaton_b  <= '0';
+
+    -- emergencia siempre en 0 (no implementado)
     confirmacion_emergencia_a  <= '0';
     confirmacion_emergencia_b  <= '0';
 end arch;
