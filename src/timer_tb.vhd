@@ -1,5 +1,6 @@
 library ieee;
 use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 use std.env.finish;
 use work.all;
 
@@ -7,42 +8,71 @@ entity timer_tb is
 end timer_tb;
 
 architecture tb of timer_tb is
-    constant periodo: time := 1 ms;
-    signal nreset, clk :std_logic;
-    signal listo : std_logic;
-    signal recarga : std_logic_vector (5 downto 0);
+    constant N : integer := 6;
+    constant periodo : time := 1 sec;
+    signal preload : unsigned (N-1 downto 0);
+    signal clk, hab, reset, Z, T : std_logic;
 begin
-    dut : entity timer port map(clk => clk, nreset => nreset,listo => listo, recarga => recarga);
+    dut : entity timer generic map (N=>N) port map (
+        clk=>clk,
+        hab=>hab,
+        reset=>reset,
+        preload => std_logic_vector(preload),
+        Z => Z,
+        T => T
+    );
 
-    gen_clk : process
+    reloj : process
     begin
-        clk <= '1';
-        wait for periodo/2;
         clk <= '0';
+        wait for periodo/2;
+        clk <= '1';
         wait for periodo/2;
     end process;
 
-    estimulo: process
+    estimulo : process
     begin
-        nreset <= '0';
+        reset <= '1';
         wait until rising_edge(clk);
         wait for periodo/4;
-        nreset <= '1';
+        reset <= '0';
+        hab <= '0';
+        preload <= to_unsigned(50-1,N);
+        wait for 10 * periodo;
+        hab <= '1';
+        wait for 50 * periodo;
+        preload <= to_unsigned(10-1,N);
+        wait for 10 * periodo;
+        preload <= to_unsigned(50-1,N);
+        wait for 29 * periodo;
+        reset <= '1';
+        wait for periodo;
+        reset <= '0';
+        preload <= to_unsigned(10-1,N);
         wait;
     end process;
 
-    evaluacion: process
+    evaluacion : process
+        constant E_NO_FIN  : string := "Esperaba fin de temporización";
+        constant E_NO_CERO : string := "Esperaba cuenta cero";
     begin
-        wait until rising_edge(clk);
-        wait for periodo/4;
-        nreset <= '0';
-        
-        wait for 3*periodo;
-        nreset <= '1';
-        
-        wait for 15*periodo;
-
-
+        wait until falling_edge(reset);
+        wait for (60 - 1) * periodo;
+        assert T report E_NO_FIN severity error; -- Ciclo final de temporización
+        wait for periodo;
+        assert Z report E_NO_CERO severity error; -- Ciclo de carga
+        wait for (10 - 1) * periodo;
+        assert T report E_NO_FIN severity error; -- Ciclo final de temporización
+        wait for periodo;
+        assert Z report E_NO_CERO severity error; -- Ciclo de carga
+        wait for 30 * periodo;
+        assert Z report E_NO_CERO severity error; -- Ciclo de carga (por reset)
+        wait for (10-1) * periodo;
+        assert T report E_NO_FIN severity error; -- Ciclo final de temporización
+        wait for periodo;
+        assert Z report E_NO_CERO severity error; -- Ciclo de carga
+        wait for periodo;
         finish;
-        end process;
+    end process;
+
 end tb;

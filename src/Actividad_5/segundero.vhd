@@ -34,10 +34,10 @@ begin
                 segundo + 1 when hab else
                 segundo;
 
-U2: entity decod_7s port map(
-A=> std_logic_vector(segundo),
-y=> display(6 downto 0)
-);
-display(7) <= limite;
+    U2: entity decod_7s port map(
+        A=> std_logic_vector(segundo),
+        y=> display(6 downto 0)
+    );
+    display(7) <= limite;
 
 end arch;

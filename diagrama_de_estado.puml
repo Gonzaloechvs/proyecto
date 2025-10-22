@@ -1,0 +1,80 @@
+@startuml
+
+note as N_valor_defecto
+ Valores por defecto
+ Rt <- 0
+end note
+
+note as N_timer
+Timer:
+
+T <= Cuenta = 1
+Z <= Cuenta = 0
+
+Cuenta_sig <= 0 when Rt else
+              C when Z else
+              Cuenta - 1;
+end note
+
+VNS : C <- 49
+CVNS : C <- 0
+CVNS : Rt <- 1
+VPNS : C <- 49
+VENS : C <- 0
+VOE : C <- 49
+CVOE : C <- 0
+CVOE : Rt <- 1
+VPOE : C <- 49
+VEOE : C <- 0
+ANS : C <- 9
+AOE : C <- 9
+
+[*] --> VNS
+VNS --> ANS : T ∧ ¬PNS ∧ ¬ENS
+VNS --> VPNS : T ∧ PNS ∧ ¬ENS
+VNS --> VENS : ENS
+VNS --> CVNS : EOE ∧ ¬ENS
+CVNS --> ANS
+VENS --> ANS : (T ∨ Z) ∧ ¬ENS
+VPNS --> ANS : T
+ANS --> VOE : T ∧ (¬ENS ∨ EOE)
+ANS --> VENS : ENS ∧ ¬EOE
+VOE --> AOE : T ∧ ¬POE ∧ ¬EOE
+VOE --> VPOE : T ∧ POE ∧ ¬EOE
+VOE --> VEOE : EOE
+VOE --> CVOE : ENS ∧ ¬EOE
+CVOE --> AOE
+VEOE --> AOE : (T ∨ Z) ∧ ¬EOE
+VPOE --> AOE : T
+AOE --> VNS : T ∧ (¬EOE ∨ ENS)
+AOE --> VEOE : EOE ∧ ¬ENS
+
+||
+NENS : ENS <- 0
+AENS : ENS <- 1
+[*] --> NENS
+NENS --> AENS : SENS
+AENS --> NENS : VENS ∧ ¬SENS
+
+||
+NEOE : EOE <- 0
+AEOE : EOE <- 1
+[*] --> NEOE
+NEOE --> AEOE : SEOE
+AEOE --> NEOE : VEOE ∧ ¬SEOE
+
+||
+NPNS : PNS <- 0
+APNS : PNS <- 1
+[*] --> NPNS
+NPNS --> APNS : SPNS
+APNS --> NPNS : VPNS
+
+||
+NPOE : POE <- 0
+APOE : POE <- 1
+[*] --> NPOE
+NPOE --> APOE : SPOE
+APOE --> NPOE : VPOE
+
+@enduml
