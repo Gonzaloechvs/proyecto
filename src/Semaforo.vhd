@@ -115,7 +115,7 @@ begin
         emer_b_pend <= '0';
     elsif rising_edge(clk) then
         -- Registrar emergencia pendiente si aparece la solicitud
-        if solicitud_emergencia_a then
+        if solicitud_emergencia_a and not solicitud_emergencia_b then
             emer_a_pend <= '1';
             confirmacion_emergencia_a <= '1';
         elsif est_act = EMERG_A then
@@ -124,7 +124,7 @@ begin
             confirmacion_emergencia_a <= '0';
         end if;
 
-        if solicitud_emergencia_b then
+        if solicitud_emergencia_b and not solicitud_emergencia_a then
             emer_b_pend <= '1';
             confirmacion_emergencia_b <= '1';
         elsif est_act = EMERG_B then
