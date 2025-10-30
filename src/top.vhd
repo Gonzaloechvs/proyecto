@@ -4,36 +4,29 @@ use ieee.numeric_std.all;
 use work.all;
 
 entity top is
-    generic (
-        constant W : integer := 4  -- ancho de los operandos
-    );
     port (
-        clk    : in  std_logic;                       -- reloj
+        clk     : in  std_logic;                    -- reloj
         X       : in  std_logic_vector(7 downto 0); -- switches
-        display    : out std_logic_vector(7 downto 0) -- resultado
+        display : out std_logic_vector(7 downto 0)  -- resultado
     );
 
 end top;
 
 architecture arch of top is
 
-    signal A, B, C, Y: std_logic_vector(W-1 downto 0);
-    signal sel_fn : std_logic_vector(3 downto 0);
+    signal A, B, C, Y, sel_fn: std_logic_vector(3 downto 0);
     signal flanco_A, flanco_B, flanco_fn : std_logic;
     signal Z : std_logic;
 begin
     
     alu_1: entity alu
-        generic map (
-            W => W
-        )
-        port map (
-            A => A,
-            B => B,
-            sel_fn => sel_fn,
-            Y => Y,
-            Z => Z
-        );
+    port map (
+        A => A,
+        B => B,
+        sel_fn => sel_fn,
+        Y => Y,
+        Z => Z
+    );
 
     detector_x4: entity detector_flanco_as
     port map (
@@ -61,7 +54,7 @@ begin
         if rising_edge(clk) then
             sel_fn <= X(3 downto 0);
             if flanco_B = '1' then
-                B <= X(W-1 downto 0);
+                B <= X(3 downto 0);
             else 
             B <= B;
             end if;    
@@ -70,7 +63,7 @@ begin
                     A <= Y;
                     sel_fn <= X(3 downto 0);
                 else
-                    A <= X(W-1 downto 0);
+                    A <= X(3 downto 0);
                 end if;
             else
                 A <= A;
@@ -89,5 +82,4 @@ begin
         Y => display(6 downto 0)
     );
     display(7) <= Z;
-
-    end arch;
+end arch;

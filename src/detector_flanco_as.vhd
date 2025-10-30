@@ -4,15 +4,13 @@ use ieee.numeric_std.all;
 
 entity detector_flanco_as is
     port (
-        clk   : in  std_logic;
-        signal_in  : in  std_logic;
+        clk, signal_in : in  std_logic;
         flanco : out std_logic
     );
 end detector_flanco_as;
 
 architecture arch of detector_flanco_as is
-    signal signal_in2 : std_logic;
-    signal signal_in_sync : std_logic;
+    signal signal_in2, signal_in_sync : std_logic;
 begin
     process(clk)
     begin

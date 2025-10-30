@@ -28,6 +28,5 @@ begin
     "0111001" when "1100",
     "1011110" when "1101",
     "1111001" when "1110",
-    "1110001" when "1111",
-    "-------"  when others;
+    "1110001" when others;
 end arch;

@@ -6,7 +6,7 @@ use ieee.math_real.all;
 
 entity alu is
     generic (
-        constant W : integer  -- ancho de los operandos
+        constant W : integer := 4  -- ancho de los operandos
     );
     port (
         A       : in  std_logic_vector(W-1 downto 0); -- operando A
