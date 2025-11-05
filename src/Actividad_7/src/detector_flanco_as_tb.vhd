@@ -51,8 +51,12 @@ begin
         
         -- Caso 5: Flanco de subida
         signal_in <= '1';
-        wait for periodo;
+        wait for periodo * 2;
         
+        -- Caso 6: No hay flanco
+        signal_in <= '0';
+        wait for periodo * 2;
+
         -- Finalizar la simulación
         wait for periodo * 2;
         finish;
