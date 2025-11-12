@@ -17,6 +17,7 @@ architecture tb of ram_512x32_dualport_tb is
 
     constant periodo :time := 10 ns;
 begin
+
     dut : entity ram_512x32 generic map (
         init_file => "../src/ram_512x32_dualport_tb_contenido.txt"
     ) port map(
@@ -27,6 +28,7 @@ begin
         din => din,
         dout => dout
     );
+
     clk_process : process
     begin
         clk <= '0';
@@ -37,8 +39,8 @@ begin
 
     estimulo_y_evaluacion : process
     begin
-        -- Lectura de la dirección 1
-        addr_r <= (others => '1');
+        -- Lectura de la dirección 0
+        addr_r <= (others => '0');
         we <= (others => '0');
         wait until rising_edge(clk);
         wait for periodo / 4;
