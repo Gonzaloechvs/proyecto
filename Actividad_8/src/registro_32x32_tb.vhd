@@ -71,7 +71,22 @@ begin
         assert dout_1 = x"DEADBEEF"
             report "Valor leído en dirección 10 distinto al esperado" severity error;
         assert dout_2 = x"DEADBEEF"
-            report "Valor leído en dirección 10 distinto al esperado" severity error;
+            report "Valor leído en dirección 9 distinto al esperado" severity error;
+        wait for periodo*2;
+
+        -- Escritura en la dirección 9
+        addr_w <= std_logic_vector(to_unsigned(9, 5));
+        din <= x"D2AD8111";
+        we <= "1111"; -- Habilitar escritura completa
+        wait until rising_edge(clk);
+        wait for periodo*2;
+
+         -- Lectura de la dirección 9
+        we <= (others => '0');
+        wait until rising_edge(clk);
+        wait for periodo / 4;
+        assert dout_2 = x"D2AD8111"
+            report "Valor leído en dirección 9 distinto al esperado" severity error;
         wait for periodo*2;
         finish;
     end process;
