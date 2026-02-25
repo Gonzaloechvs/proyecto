@@ -4,7 +4,7 @@ use ieee.numeric_std.all;
 use ieee.std_logic_textio.all;
 use std.textio.all;
 
-entity registro_32x32 is
+entity rf32x32 is
     port (
         clk     : in  std_logic; -- clock
         we      : in  std_logic_vector(3 downto 0); -- write enable cada bloque de 8 bits (byte)
@@ -15,9 +15,9 @@ entity registro_32x32 is
         dout_1  : out std_logic_vector(31 downto 0); -- dato de salida puerto de lectura 1
         dout_2  : out std_logic_vector(31 downto 0) -- dato de salida puerto de lectura 2
     );
-end entity registro_32x32;
+end entity rf32x32;
 
-architecture behavioral of registro_32x32 is
+architecture behavioral of rf32x32 is
     type ram_type is array (31 downto 0) of std_logic_vector(31 downto 0); -- 32 palabras de 32 bits cada una
 
     signal ram : ram_type := (others => (others => '0'));

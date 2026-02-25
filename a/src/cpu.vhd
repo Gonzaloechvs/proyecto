@@ -5,16 +5,13 @@ use work.all;
 
 entity cpu is
     port(
-        clk    : in std_logic;
-        nreset : in std_logic;
-        -- -00 8bit -01 16bit -10 32bit
-        -- 0-- ext.signo 1-- ext.cero
-        bus_twidth : in std_logic_vector (2 downto 0);
-        bus_addr   : in std_logic_vector (31 downto 0);
-        bus_act    : in std_logic;
+        clk        : in std_logic;
+        nreset     : in std_logic;
+        bus_dsm    : in std_logic_vector (31 downto 0);
+        bus_addr   : out std_logic_vector (31 downto 0);
         bus_dms    : out std_logic_vector (31 downto 0);
-        bus_tms    : out std_logic;
-        bus_dsm    : out std_logic_vector (31 downto 0)
+        bus_twidth : out std_logic_vector (2 downto 0);
+        bus_tms    : out std_logic
     );
 end cpu;
 
@@ -43,6 +40,7 @@ architecture arch of cpu is
     signal alu_fn_i : std_logic_vector (3 downto 0);
     signal alu_fn_r : std_logic_vector (3 downto 0);
     signal alu_fn_b : std_logic_vector (3 downto 0);
+    
 begin
 
     U1 : entity control_cpu port map (
@@ -70,8 +68,8 @@ begin
     rf_din <= bus_dsm when mem_source else imm_val when imm_source else alu_y;
 
     U2 : entity rf32x32 port map (
-        clk    => clk,
-        we     => rf_we,
+        clk => clk,
+        we => rf_we,
         addr_a => ir(19 downto 15),
         addr_b => ir(24 downto 20),
         addr_w => rf_addr_w,
@@ -113,7 +111,7 @@ begin
     bus_twidth <= ir(14 downto 12) when data_addr else "010";
     bus_tms <= wmem;
     
-    -- valor inmediato
+    -- valor inmeditao
     -- https://riscv.github.io/riscv-isa-manual/snapshot/unprivileged/#_immediate_encoding_variants
     with imm_mode select imm_val <=
                 32x"4" when "000",
@@ -143,5 +141,4 @@ begin
     with ir(14 downto 12) select take_branch <=
                 alu_z when "000" | "101" | "111", -- igual, mayor o igual (el resultado cero es afirmativo)
                 not alu_z when others; -- distinto, menor (el resultado cero es negativo)
-
 end arch ; -- arch

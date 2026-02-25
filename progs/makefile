@@ -14,7 +14,7 @@ AR = $(PLATAFORMA)ar
 OBJCOPY = $(PLATAFORMA)objcopy
 
 ARCH = -march=rv32i -mabi=ilp32
-CCFLAGS = $(ARCH) -Wall -Wextra -Werror
+CCFLAGS = $(ARCH) -Wall -Wextra -Werror -O1
 ASFLAGS = $(ARCH)
 LDFLAGS = $(ARCH) -T link_script.ld -nostartfiles -nodefaultlibs
 
