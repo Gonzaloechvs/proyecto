@@ -56,7 +56,6 @@ begin
             nreset     => nreset_sync,
             bus_twidth => cpu_bus_twidth,
             bus_addr   => cpu_bus_addr,
-            bus_act    => '1',
             bus_dms    => cpu_bus_dms,
             bus_tms    => cpu_bus_tms,
             bus_dsm    => cpu_bus_dsm
@@ -104,7 +103,7 @@ begin
     u_ram_512x32: entity ram512x32
     generic map(
         -- cambiar a rapido si es tb y nada si es para probar en la FPGA
-        archivo_init => "../src/cuenta_en_display_rapida.txt"
+        archivo_init => "../src/cuenta_en_display.txt"
     )
         port map (
             clk   => clk,

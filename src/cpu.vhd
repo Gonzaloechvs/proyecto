@@ -11,10 +11,9 @@ entity cpu is
         -- 0-- ext.signo 1-- ext.cero
         bus_twidth : out std_logic_vector (2 downto 0);
         bus_addr   : out std_logic_vector (31 downto 0);
-        bus_act    : in std_logic;
         bus_dms    : out std_logic_vector (31 downto 0);
         bus_tms    : out std_logic;
-        bus_dsm    : out std_logic_vector (31 downto 0)
+        bus_dsm    : in std_logic_vector (31 downto 0)
     );
 end cpu;
 
