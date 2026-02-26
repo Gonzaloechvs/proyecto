@@ -123,7 +123,6 @@ begin
             nreset     => nreset_sync,
             bus_addr   => slv_bus_addr,
             bus_dms    => slv_bus_dms,
-            bus_act    => '1',                 
             bus_tms    => slv_bus_tms,
             bus_sact   => bus_sact_array(1),   
             bus_dsm    => bus_sdsm_array(1),

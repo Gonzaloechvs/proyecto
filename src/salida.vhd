@@ -13,7 +13,6 @@ generic (
         -- Puertos del bus del crossbar
         bus_addr  : in std_logic_vector(31 downto 0);
         bus_dms   : in std_logic_vector(31 downto 0);
-        bus_act   : in std_logic;
         bus_tms   : in std_logic;
         -- Respuesta del esclavo
         bus_sact  : out std_logic;
@@ -25,7 +24,6 @@ generic (
 end salida;
 
 architecture arch of salida is
-    signal reg_data : std_logic_vector(31 downto 0);
     signal match    : std_logic;
 begin
 
@@ -35,11 +33,11 @@ begin
     begin
         if rising_edge(clk) then
             if nreset = '0' then
-                reg_data <= (others => '0');
+                dout <= (others => '0');
                 we <= '0';
             else
-                if (match = '1' and bus_act = '1' and bus_tms = '1') then
-                    reg_data <= bus_dms;
+                if (match = '1' and bus_tms = '1') then
+                    dout <= bus_dms;
                     we <= '1';
                 else
                     we <= '0';
@@ -49,6 +47,5 @@ begin
     end process;
     
     bus_sact <= we;
-    dout <= reg_data;
     bus_dsm <= dout;
 end arch;

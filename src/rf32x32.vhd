@@ -26,9 +26,8 @@ begin
             if we = '1' then
                 ram(to_integer(unsigned(addr_w))) <= din;
             end if;
+            dout_a <= ram(to_integer(unsigned(addr_a)));
+            dout_b <= ram(to_integer(unsigned(addr_b)));
         end if;
-        dout_a <= ram(to_integer(unsigned(addr_a)));
-        dout_b <= ram(to_integer(unsigned(addr_b)));
     end process;
-
 end architecture arch;
