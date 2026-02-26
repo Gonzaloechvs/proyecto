@@ -34,7 +34,7 @@ begin
     registros : process (clk)
     begin
         if rising_edge(clk) then
-            if not nreset then
+            if nreset = '0' then
                 reg_data <= (others => '0');
                 we <= '0';
             else

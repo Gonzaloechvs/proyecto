@@ -9,8 +9,8 @@ entity cpu is
         nreset : in std_logic;
         -- -00 8bit -01 16bit -10 32bit
         -- 0-- ext.signo 1-- ext.cero
-        bus_twidth : in std_logic_vector (2 downto 0);
-        bus_addr   : in std_logic_vector (31 downto 0);
+        bus_twidth : out std_logic_vector (2 downto 0);
+        bus_addr   : out std_logic_vector (31 downto 0);
         bus_act    : in std_logic;
         bus_dms    : out std_logic_vector (31 downto 0);
         bus_tms    : out std_logic;
@@ -21,8 +21,8 @@ end cpu;
 architecture arch of cpu is
     subtype reg32_t is std_logic_vector (31 downto 0);
     -- registros
-    signal pc,pc_next : reg32_t; -- Contador de programa
-    signal ir : reg32_t; -- Registro de instrucción
+    signal pc,pc_next : reg32_t := (others =>'0'); -- Contador de programa
+    signal ir         : reg32_t := (others =>'0'); -- Registro de instrucción
     -- Unidad de control
     signal jump, s1pc, wpc, wmem, wreg, sel_imm : std_logic;
     signal data_addr, mem_source, imm_source, winst : std_logic;
@@ -83,7 +83,11 @@ begin
     alu_a <= pc when s1pc else rf_dout_a;
     alu_b <= imm_val when sel_imm else rf_dout_b;
 
-    U3 : entity alu port map (
+    U3 : entity alu 
+    generic map(
+        W => 32  
+    )
+    port map (
         A => alu_a,
         B => alu_b,
         sel_fn => alu_fn,

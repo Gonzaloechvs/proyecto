@@ -18,7 +18,7 @@ architecture arch of reset_al_inicializar_fpga is
 
     signal addr : unsigned (7 downto 0);
     signal din : std_logic_vector (15 downto 0);
-    signal dout : std_logic_vector (15 downto 0);
+    signal dout : std_logic_vector (15 downto 0) := (others => '0');
     signal we : std_logic;
 begin
 

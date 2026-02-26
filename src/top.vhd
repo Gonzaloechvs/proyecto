@@ -19,7 +19,6 @@ architecture arch of top is
     signal cpu_bus_dms    : std_logic_vector(31 downto 0);
     signal cpu_bus_twidth : std_logic_vector(2 downto 0);
     signal cpu_bus_tms    : std_logic;
-    signal cpu_bus_act    : std_logic;
     signal cpu_bus_dsm    : std_logic_vector(31 downto 0);
 
     signal slv_bus_addr   : std_logic_vector(31 downto 0);
@@ -57,7 +56,7 @@ begin
             nreset     => nreset_sync,
             bus_twidth => cpu_bus_twidth,
             bus_addr   => cpu_bus_addr,
-            bus_act    => cpu_bus_act,
+            bus_act    => '1',
             bus_dms    => cpu_bus_dms,
             bus_tms    => cpu_bus_tms,
             bus_dsm    => cpu_bus_dsm

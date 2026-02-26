@@ -1,47 +1,34 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use ieee.std_logic_textio.all;
-use std.textio.all;
 
 entity rf32x32 is
     port (
-        clk     : in  std_logic; -- clock
-        we      : in  std_logic_vector(3 downto 0); -- write enable cada bloque de 8 bits (byte)
-        addr_r1 : in  std_logic_vector(4 downto 0); -- 5 bits de dirección para 32 palabras puerto de lectura 1
-        addr_r2 : in  std_logic_vector(4 downto 0); -- 5 bits de dirección para 32 palabras puerto de lectura 2
-        addr_w  : in  std_logic_vector(4 downto 0); -- 5 bits de dirección para 32 palabras puerto de escritura
-        din     : in  std_logic_vector(31 downto 0); -- dato de entrada
-        dout_1  : out std_logic_vector(31 downto 0); -- dato de salida puerto de lectura 1
-        dout_2  : out std_logic_vector(31 downto 0) -- dato de salida puerto de lectura 2
+        clk     : in  std_logic;
+        we      : in  std_logic;
+        addr_a  : in  std_logic_vector(4 downto 0);
+        addr_b  : in  std_logic_vector(4 downto 0);
+        addr_w  : in  std_logic_vector(4 downto 0);
+        din     : in  std_logic_vector(31 downto 0);
+        dout_a   : out std_logic_vector(31 downto 0);
+        dout_b   : out std_logic_vector(31 downto 0)
     );
-end entity rf32x32;
+end rf32x32;
 
-architecture behavioral of rf32x32 is
-    type ram_type is array (31 downto 0) of std_logic_vector(31 downto 0); -- 32 palabras de 32 bits cada una
+architecture arch of rf32x32 is
 
+    type ram_type is array (0 to 31) of std_logic_vector(31 downto 0);
     signal ram : ram_type := (others => (others => '0'));
 begin
     process(clk)
     begin
         if rising_edge(clk) then
-            -- Escritura condicional por bytes
-            if we(0) = '1' then
-                ram(to_integer(unsigned(addr_w)))(7 downto 0) <= din(7 downto 0);
+            if we = '1' then
+                ram(to_integer(unsigned(addr_w))) <= din;
             end if;
-            if we(1) = '1' then
-                ram(to_integer(unsigned(addr_w)))(15 downto 8) <= din(15 downto 8);
-            end if;
-            if we(2) = '1' then
-                ram(to_integer(unsigned(addr_w)))(23 downto 16) <= din(23 downto 16);
-            end if;
-            if we(3) = '1' then
-                ram(to_integer(unsigned(addr_w)))(31 downto 24) <= din(31 downto 24);
-            end if;
-
-            -- Lectura
-            dout_1 <= ram(to_integer(unsigned(addr_r1)));
-            dout_2 <= ram(to_integer(unsigned(addr_r2)));
         end if;
+        dout_a <= ram(to_integer(unsigned(addr_a)));
+        dout_b <= ram(to_integer(unsigned(addr_b)));
     end process;
-end architecture behavioral;
+
+end architecture arch;
