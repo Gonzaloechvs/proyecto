@@ -86,7 +86,7 @@ begin
     );
 
     U_RAM : entity ram512x32 generic map (
-        archivo_init => "cpu_tb_prog.txt"
+        archivo_init => "../src/cuenta_en_display_rapida.txt"
     ) port map (
         clk  => clk,
         we   => ram_we,
@@ -96,20 +96,6 @@ begin
         dout => ram_dout
     );
 
-    MONITOR_BUS : process
-    begin
-        wait until rising_edge(clk);
-        if bus_mtms then
-            ultima_escritura_addr <= bus_maddr;
-            ultima_escritura_twidth <= bus_mtwidth;
-            ultima_escritura_dms <= bus_mdms;
-        else
-            ultima_lectura_addr <= bus_maddr_reg;
-            ultima_lectura_twidth <= bus_mtwidth;
-            wait for periodo/4;
-            ultima_lectura_dsm <= bus_mdsm;
-        end if;
-    end process;
 
     RELOJ : process
     begin
@@ -125,7 +111,7 @@ begin
         wait until rising_edge(clk);
         wait for periodo/4;
         nreset <= '1';
-        wait for 100*periodo;
+        wait for 1000*periodo;
         finish;
     end process;
 
