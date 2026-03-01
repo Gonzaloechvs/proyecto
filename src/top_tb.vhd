@@ -13,6 +13,7 @@ architecture sim of top_tb is
     signal clk         : std_logic := '0';
     signal nreset      : std_logic := '0';
     signal display_out : std_logic_vector(7 downto 0);
+    signal switches_in : std_logic_vector(7 downto 0); 
 
     -- El periodo es T = 1 / 12 MHz = 83.333 ns
     constant periodo : time := 83.333 ns;
@@ -23,7 +24,8 @@ begin
         port map (
             clk         => clk,
             nreset      => nreset,
-            display_out => display_out
+            display_out => display_out,
+            switches_in => switches_in
         );
 
     -- Proceso que genera el Reloj de 12 MHz

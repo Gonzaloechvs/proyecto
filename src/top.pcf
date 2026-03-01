@@ -55,7 +55,7 @@
 set_io clk 94
 
 # Interruptor para el reset de la CPU
-set_io nreset 24 
+set_io nreset 31 
 
 # Display de siete segmentos
 set_io display_out[7] 124   
@@ -66,3 +66,13 @@ set_io display_out[3] 130
 set_io display_out[2] 128  
 set_io display_out[1] 122  
 set_io display_out[0] 125  
+
+# Tablero de interruptores de 8 bits
+set_io switches_in[7] 24
+set_io switches_in[6] 23
+set_io switches_in[5] 22
+set_io switches_in[4] 21
+set_io switches_in[3] 16
+set_io switches_in[2] 15
+set_io switches_in[1] 12
+set_io switches_in[0] 11

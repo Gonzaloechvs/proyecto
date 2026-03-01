@@ -32,13 +32,7 @@ architecture tb of cpu_tb is
     signal ram_addr    : std_logic_vector(8 downto 0);
     signal ram_din     : std_logic_vector(31 downto 0);
     signal ram_dout    : std_logic_vector(31 downto 0);
-    -- Monitor bus
-    signal ultima_escritura_addr : std_logic_vector (31 downto 0);
-    signal ultima_escritura_twidth : std_logic_vector (2 downto 0);
-    signal ultima_escritura_dms : std_logic_vector (31 downto 0);
-    signal ulitma_lectura_addr : std_logic_vector (31 downto 0);
-    signal ultima_lectura_twidth : std_logic_vector (2 downto 0);
-    signal ultima_lectura_dsm : std_logic_vector (31 downto 0);
+
 begin
 
     U_CPU : entity cpu port map (
@@ -111,7 +105,7 @@ begin
         wait until rising_edge(clk);
         wait for periodo/4;
         nreset <= '1';
-        wait for 1000*periodo;
+        wait for 10000*periodo;
         finish;
     end process;
 

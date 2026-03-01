@@ -9,7 +9,8 @@ entity top is
     port(
         clk         : in std_logic;
         nreset      : in std_logic;
-        display_out : out std_logic_vector(7 downto 0) 
+        display_out : out std_logic_vector(7 downto 0);
+        switches_in : in std_logic_vector(7 downto 0) 
     );
 end top;
 
@@ -26,8 +27,8 @@ architecture arch of top is
     signal slv_bus_twidth : std_logic_vector(2 downto 0);
     signal slv_bus_tms    : std_logic;
 
-    signal bus_sact_array : std_logic_vector(1 downto 0);
-    signal bus_sdsm_array : word_array(1 downto 0);
+    signal bus_sact_array : std_logic_vector(2 downto 0);
+    signal bus_sdsm_array : word_array(2 downto 0);
 
     signal ram_we         : std_logic;
     signal ram_mask       : std_logic_vector(3 downto 0);
@@ -64,7 +65,7 @@ begin
     -- Crossbar
     u_crossbar: entity crossbar
         generic map (
-            num_slaves => 2
+            num_slaves => 3
         )
         port map (
             bus_maddr   => cpu_bus_addr,
@@ -130,6 +131,20 @@ begin
             we         => perif_we
         );
 
+    
     display_out <= perif_dout(7 downto 0);
+
+    u_switches_in: entity entrada
+        generic map (
+            addr_base => x"80000004"
+        )
+        port map (
+            clk        => clk,
+            nreset     => nreset_sync,
+            bus_addr   => slv_bus_addr,
+            bus_sact   => bus_sact_array(2),   
+            bus_dsm    => bus_sdsm_array(2),
+            din        => switches_in
+        );
 
 end architecture arch;
